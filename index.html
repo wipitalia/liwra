@@ -27,76 +27,9 @@
         <div>
             <button type="button" data-toggle-bg>toggle backround</button>
         </div>
-        </hr>
 
-        <script>
-const stdres = Array.from(document.body.querySelectorAll('*'))
-    .map(e => Array.from(e.querySelectorAll('*')))
-    .flat();
-
-const qsres = liwra.querySelect(liwra.querySelect(document.body, '*'), '*');
-
-let correct = stdres.length === qsres.length;
-for (let i = 0; correct && i < stdres.length; i++) {
-    correct = correct && stdres[i] === qsres[i];
-}
-alert(`TEST: results should be the same: ${correct}`);
-        </script>
-
-        <script>
-const querySelect = liwra.querySelect
-// Form example
-
-const form = querySelect('[data-target]');
-
-const handleSubmit = evt => {
-    evt.preventDefault();
-
-    const formValues = querySelect(evt.target, 'input[name]').reduce((r, elem) => {
-        return { ...r, [elem.name]: elem.value };
-    }, {})
-
-    alert(JSON.stringify(formValues, null, 4));
-}
-
-const handleReset = () => {
-    querySelect(form, 'input[name]').value = "";
-}
-
-form.addEventListener('submit', handleSubmit);
-querySelect(form, '[data-reset]').addEventListener('click', handleReset);
-
-// --
-
-// Arbitrary property access example
-const lazyElems = querySelect('[data-lazy-content]')
-
-const handleInitLazy = () => {
-    const data = lazyElems.dataset.lazyContent;
-    alert("content:\n" + JSON.stringify(data.unwrap(), null, 4));
-    lazyElems.forEach((e, i) => e.innerText = data[i]);
-}
-
-const handleToggleBg = () => {
-    const hasBg = lazyElems.classList.contains('backgrounded').every(b => b);
-
-    // sane way to do it
-    //lazyElems.classList.toggle('backgrounded', !hasBg);
-
-    // gotta flex
-    if (hasBg) {
-        lazyElems.className = "";
-    } else {
-        lazyElems.className = "backgrounded";
-    }
-}
-
-querySelect('[data-init-lazy]').addEventListener('click', handleInitLazy);
-
-querySelect('[data-toggle-bg]').addEventListener('click', handleToggleBg);
-
-// ---
-
-        </script>
+        <!-- <script src="test.js"></script> -->
+        <script src="formExample.js"></script>
+        <script src="example.js"></script>
     </body>
 </html>
