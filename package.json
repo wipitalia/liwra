@@ -1,0 +1,21 @@
+{
+  "name": "liwra",
+  "version": "0.0.1",
+  "description": "list wrapper",
+  "main": "liwra.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.wipitalia.it:R.Mariani/liwra.git"
+  },
+  "keywords": [
+    "list",
+    "wrapper",
+    "array"
+  ],
+  "author": "rmariani@wipitalia.it",
+  "license": "MIT"
+}

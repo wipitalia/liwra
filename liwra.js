@@ -1,5 +1,9 @@
-(() => {
+((global, factory) => {
+    if (typeof exports === 'object' && typeof module !== 'undefined') module.exports = factory();
+    else global.liwra = factory();
+})(this, () => { 'use strict';
 
+// to update with future `Array.prototype`'s methods that return new arrays
 const WRAPPED_ARRAY_METHODS = [
     "concat",
     "filter",
@@ -8,13 +12,13 @@ const WRAPPED_ARRAY_METHODS = [
     "slice",
 ];
 
-const isArrayLike = v => (
-    typeof v !== "string" && 
-    !(v instanceof Node) &&
-    typeof v[Symbol.iterator] === "function"
-);
-
 const wrap = lst => {
+    const isArrayLike = v => (
+        typeof v !== "string" && 
+        (typeof Node === 'undefined' || !(v instanceof Node)) &&
+        typeof v[Symbol.iterator] === "function"
+    );
+
     const isIndex = (_, prop) => {
         try { return !isNaN(Number(prop)) }
         catch { return false }
@@ -84,7 +88,6 @@ const querySelect = (root, selector) => {
     return wrap(res);
 }
 
-// exports
-window.liwra = Object.assign(wrap, {querySelect});
+return Object.assign(wrap, {querySelect});
 
-})();
+});
