@@ -1,6 +1,6 @@
 {
   "name": "liwra",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "list wrapper",
   "main": "liwra.js",
   "directories": {
@@ -9,7 +9,7 @@
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git@gitlab.wipitalia.it:R.Mariani/liwra.git"
+    "url": "git@github.com:wipitalia/liwra.git"
   },
   "keywords": [
     "list",
