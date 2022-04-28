@@ -71,6 +71,7 @@ const wrap = lst => {
         }
 
         target.forEach(v => v[prop] = value);
+        return true;
     }
 
     if (lst.isWrapped) return lst;

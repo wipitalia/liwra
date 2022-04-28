@@ -1,6 +1,6 @@
 {
   "name": "liwra",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "list wrapper",
   "main": "liwra.js",
   "directories": {
