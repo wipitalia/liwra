@@ -38,7 +38,13 @@ const wrap = lst => {
 
     const get = (target, prop) => {
         if (prop === "isWrapped") return true;
-        if (prop === "unwrap") return () => target;
+        if (prop === "unwrap") return (idx, end) => {
+            if (typeof idx === 'undefined') return target
+            if (typeof end === 'undefined') {
+                end = idx === -1 ? end = target.length : end = idx + 1;
+            }
+            return target.slice(idx, end);
+        };
 
         if (isIndex(target, prop)) {
             return target[prop];
