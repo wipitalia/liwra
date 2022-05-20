@@ -5,89 +5,86 @@
 
 // to update with future `Array.prototype`'s methods that return new arrays
 const WRAPPED_ARRAY_METHODS = [
-    "concat",
-    "filter",
-    "flat",
-    "map",
-    "slice",
+    'concat',
+    'filter',
+    'flat',
+    'map',
+    'slice',
 ];
 
+const isArrayLike = v => (
+    typeof v !== 'string' && 
+    (typeof Node === 'undefined' || !(v instanceof Node)) &&
+    typeof v[Symbol.iterator] === 'function'
+);
+
+const isIndex = (_, prop) => {
+    try { return !isNaN(Number(prop)) }
+    catch { return false }
+}
+
+const isFromArray = (target, prop) => {
+    return typeof target[prop] !== 'undefined';
+}
+
+const isMethod = (target, prop) => {
+    return typeof target[0][prop] === 'function';
+}
+
 const wrap = lst => {
-    const isArrayLike = v => (
-        typeof v !== "string" && 
-        (typeof Node === 'undefined' || !(v instanceof Node)) &&
-        typeof v[Symbol.iterator] === "function"
-    );
-
-    const isIndex = (_, prop) => {
-        try { return !isNaN(Number(prop)) }
-        catch { return false }
-    }
-
-    const isMethod = (target, prop) => target.reduce((r, v) => {
-        return typeof v[prop] === "function" || r;
-    }, false);
-
-    const isValue = (target, prop) => target.reduce((r, v) => {
-        return typeof v[prop] !== "undefined" || r;
-    }, false);
-
-    const isFromArray = (target, prop) => {
-        return typeof target[prop] !== "undefined";
+    const unwrap = target => (idx, end) => {
+        if (typeof idx === 'undefined') return target
+        if (typeof end === 'undefined') {
+            const nextItem = idx === -1 ? target.length : idx + 1;
+            return target.slice(idx, nextItem)[0];
+        }
+        return target.slice(idx, end);
     }
 
     const get = (target, prop) => {
-        if (prop === "isWrapped") return true;
-        if (prop === "unwrap") return (idx, end) => {
-            if (typeof idx === 'undefined') return target
-            if (typeof end === 'undefined') {
-                const nextItem = idx === -1 ? target.length : idx + 1;
-                return target.slice(idx, nextItem)[0];
-            }
-            return target.slice(idx, end);
-        };
+        if (prop === 'isWrapped') return true;
+        if (prop === 'exists') return target.length !== 0;
+        if (prop === 'unwrap') return unwrap(target);
 
-        if (isIndex(target, prop)) {
-            return target[prop];
-        }
+        if (isIndex(target, prop)) return target[prop];
 
         if (isFromArray(target, prop)) {
             if (WRAPPED_ARRAY_METHODS.includes(prop)) {
                 return (...args) => wrap(target[prop](...args));
             }
-            if (typeof target[prop] === "function") {
+            if (typeof target[prop] === 'function') {
                 return (...args) => target[prop](...args);
             }
             return target[prop];
         }
 
         if (isMethod(target, prop)) {
-            return (...args) => {
-                return wrap(target.map(v => v[prop].apply(v, args)));
-            }
+            return (...args) => wrap(target.map(v => v[prop].apply(v, args)));
         }
 
-        if (isValue(target, prop)) {
-            return wrap(target.map(v => v[prop]));
-        }
+        // if is value
+        return wrap(target.map(v => v[prop]));
+    }
+
+    const has = (target, prop) => {
+        if (['isWrapped', 'exists', 'unwrap'].includes(prop)) return true;
+        if (isIndex(target, prop) && prop in target) return true;
+        if (isFromArray(target, prop)) return true;
+        if (isMethod(target, prop)) return true;
+        return prop in target[0];
     }
 
     const set = (target, prop, value) => {
-        if (isIndex(target, prop)) {
-            target[prop] = value;
-        }
-
         target.forEach(v => v[prop] = value);
         return true;
     }
 
     if (lst.isWrapped) return lst;
-    if (isArrayLike(lst)) return new Proxy([...lst], {get, set});
-    return new Proxy([lst], {get, set});
+    return new Proxy(isArrayLike(lst) ? [...lst] : [lst], {get, set, has});
 }
 
 const querySelect = (root, selector) => {
-    if (typeof root === "string" && typeof selector === "undefined") {
+    if (typeof root === 'string' && typeof selector === 'undefined') {
         selector = root;
         root = document;
     }
