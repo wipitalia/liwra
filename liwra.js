@@ -45,6 +45,8 @@ const wrap = lst => {
         if (prop === 'isWrapped') return true;
         if (prop === 'exists') return target.length !== 0;
         if (prop === 'unwrap') return unwrap(target);
+        
+        if (target.length === 0) return wrap(target);
 
         if (isIndex(target, prop)) return target[prop];
 
@@ -59,7 +61,10 @@ const wrap = lst => {
         }
 
         if (isMethod(target, prop)) {
-            return (...args) => wrap(target.map(v => v[prop].apply(v, args)));
+            return (...args) => wrap(target.map(v => {
+                if (typeof v[prop] !== 'function') return undefined;
+                return v[prop].apply(v, args);
+            }));
         }
 
         // if is value
@@ -80,7 +85,10 @@ const wrap = lst => {
     }
 
     if (lst.isWrapped) return lst;
-    return new Proxy(isArrayLike(lst) ? [...lst] : [lst], {get, set, has});
+    return new Proxy(
+        (isArrayLike(lst) ? [...lst] : [lst]).filter(v => v !== undefined),
+        { get, set, has }
+    )
 }
 
 const querySelect = (root, selector) => {
